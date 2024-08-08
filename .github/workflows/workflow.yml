@@ -27,6 +27,7 @@ jobs:
         run: mvn -B package --file pom.xml
 
   security_analysis:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
