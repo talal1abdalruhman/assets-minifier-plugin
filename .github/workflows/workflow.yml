@@ -39,4 +39,5 @@ jobs:
           args: >
             -Dsonar.projectKey=talal1abdalruhman_assets-minifier-plugin
             -Dsonar.organization=talal1abdalruhman
+            -Dsonar.java.binaries=target/classes
           projectBaseDir: .
