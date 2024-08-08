@@ -1,53 +1,9 @@
-# Java
-*.class
-*.jar
-*.war
-*.ear
-
-# Logs
-*.log
-*.out
-*.log.*
-
-# Maven
-target/
-!.mvn/wrapper/maven-wrapper.jar
-
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
-
-# IntelliJ IDEA
+/.project
+*/target
+target/*
+*/target/*
+*/.idea/*
+.idea/*
+.idea/**/workspace.xml
 *.iml
-.idea/
-out/
-
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Temporary files
-*.tmp
-*.swp
-*.swo
-*~
-
-# IDE specific
-.vscode/
-*.sublime-workspace
-*.sublime-project
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Backup files
-*.bak
-*.orig
-*.save
-
-# Other
-.env
+artifacts/*
