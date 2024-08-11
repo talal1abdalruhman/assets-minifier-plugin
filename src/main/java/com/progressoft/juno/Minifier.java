@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.progressoft.juno.minifier.GeneralMinifier;
@@ -86,9 +87,7 @@ public class Minifier extends AbstractMojo {
         scanner.setExcludes(excludes.toArray(new String[0]));
         scanner.addDefaultExcludes();
         scanner.scan();
-        for (String s : scanner.getIncludedFiles()) {
-            list.add(s);
-        }
+        Collections.addAll(list, scanner.getIncludedFiles());
         return list;
     }
 
