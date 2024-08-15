@@ -11,8 +11,7 @@ import static com.progressoft.juno.util.Constants.*;
 
 
 public final class SelectorUtils {
-
-    private static SelectorUtils instance = new SelectorUtils();
+    private static final SelectorUtils instance = new SelectorUtils();
 
     private SelectorUtils() {}
 
@@ -48,8 +47,7 @@ public final class SelectorUtils {
     }
 
     @SuppressWarnings("SimplifiableIfStatement")
-    public static boolean matchAntPathPatternStart(
-            MatchPattern pattern, String str, String separator, boolean isCaseSensitive) {
+    public static boolean matchAntPathPatternStart(MatchPattern pattern, String str, String separator, boolean isCaseSensitive) {
         if (separatorPatternStartSlashMismatch(pattern, str, separator)) {
             return false;
         }
@@ -522,29 +520,5 @@ public final class SelectorUtils {
             ret.add(st.nextToken());
         }
         return ret.toArray(new String[0]);
-    }
-
-    public static boolean isOutOfDate(File src, File target, int granularity) {
-        if (!src.exists()) {
-            return false;
-        }
-        if (!target.exists()) {
-            return true;
-        }
-        if ((src.lastModified() - granularity) > target.lastModified()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static String removeWhitespace(String input) {
-        StringBuilder result = new StringBuilder();
-        if (input != null) {
-            StringTokenizer st = new StringTokenizer(input);
-            while (st.hasMoreTokens()) {
-                result.append(st.nextToken());
-            }
-        }
-        return result.toString();
     }
 }

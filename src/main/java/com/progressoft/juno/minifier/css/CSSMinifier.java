@@ -6,10 +6,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.progressoft.juno.minifier.AbstractMinifier;
 import com.progressoft.juno.minifier.exception.*;
@@ -42,44 +39,9 @@ public class CSSMinifier extends AbstractMinifier {
             }
 
             logger.debug("Removing comments...");
-            currPositionInStream = 0;
-            while ((currPositionInStream = sb.indexOf("/*", currPositionInStream)) != -1) {
-                if (sb.charAt(currPositionInStream + 2) == '*' && sb.charAt(currPositionInStream + 3) != '/') {
-                    currPositionInStream += 2;
-                    continue;
-                }
-                commentIdx = sb.indexOf("*/", currPositionInStream + 2);
-                if (commentIdx == -1) {
-                    throw new UnterminatedCommentException();
-                }
-                sb.delete(currPositionInStream, commentIdx + 2);
-            }
+            removeComments(sb);
             logger.debug("Parsing and processing selectors...");
-            List<Selector> selectors = new ArrayList<>();
-            currPositionInStream = 0;
-            openBraces = 0;
-            commentIdx = 0;
-            for (int i = 0; i < sb.length(); i++) {
-                curr = sb.charAt(i);
-                if (openBraces < 0) {
-                    throw new UnbalancedBracesException();
-                }
-                if (curr == '{') {
-                    openBraces++;
-                } else if (curr == '}') {
-                    openBraces--;
-                    if (openBraces == 0) {
-                        try {
-                            selectors.add(new Selector(sb.substring(currPositionInStream, i + 1)));
-                        } catch (UnterminatedSelectorException usex) {
-                            logger.debug("Unterminated selector: {}", usex.getMessage());
-                        } catch (EmptySelectorBodyException ebex) {
-                            logger.debug("Empty selector body: {}", ebex.getMessage());
-                        }
-                        currPositionInStream = i + 1;
-                    }
-                }
-            }
+            List<Selector> selectors = parseSelectors(sb);
 
             for (Selector selector : selectors) {
                 pout.print(selector.toString());
@@ -95,6 +57,56 @@ public class CSSMinifier extends AbstractMinifier {
             } catch (IOException e) {
                 throw new MinificationException("Minification failed due to Exception.", e);
             }
+        }
+    }
+
+    private static List<Selector> parseSelectors(StringBuffer sb) throws UnbalancedBracesException, IncompleteSelectorException {
+        List<Selector> selectors = new ArrayList<>();
+        int openBraces;
+        int currPositionInStream;
+        char curr;
+        int commentIdx;
+        currPositionInStream = 0;
+        openBraces = 0;
+        commentIdx = 0;
+        for (int i = 0; i < sb.length(); i++) {
+            curr = sb.charAt(i);
+            if (openBraces < 0) {
+                throw new UnbalancedBracesException();
+            }
+            if (curr == '{') {
+                openBraces++;
+            } else if (curr == '}') {
+                openBraces--;
+                if (openBraces == 0) {
+                    try {
+                        selectors.add(new Selector(sb.substring(currPositionInStream, i + 1)));
+                    } catch (UnterminatedSelectorException usex) {
+                        logger.debug("Unterminated selector: {}", usex.getMessage());
+                    } catch (EmptySelectorBodyException ebex) {
+                        logger.debug("Empty selector body: {}", ebex.getMessage());
+                    }
+                    currPositionInStream = i + 1;
+                }
+            }
+        }
+        return selectors;
+    }
+
+    private static void removeComments(StringBuffer sb) throws UnterminatedCommentException {
+        int currPositionInStream;
+        int commentIdx;
+        currPositionInStream = 0;
+        while ((currPositionInStream = sb.indexOf("/*", currPositionInStream)) != -1) {
+            if (sb.charAt(currPositionInStream + 2) == '*' && sb.charAt(currPositionInStream + 3) != '/') {
+                currPositionInStream += 2;
+                continue;
+            }
+            commentIdx = sb.indexOf("*/", currPositionInStream + 2);
+            if (commentIdx == -1) {
+                throw new UnterminatedCommentException();
+            }
+            sb.delete(currPositionInStream, commentIdx + 2);
         }
     }
 }

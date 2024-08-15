@@ -162,8 +162,8 @@ public abstract class AbstractScanner implements Scanner {
         excludesPatterns = MatchPatterns.from(excludes);
     }
 
-    @Override
-    public void setFilenameComparator(Comparator<String> filenameComparator) {
-        this.filenameComparator = filenameComparator;
-    }
+//    @Override
+//    public void setFilenameComparator(Comparator<String> filenameComparator) {
+//        this.filenameComparator = filenameComparator;
+//    }
 }

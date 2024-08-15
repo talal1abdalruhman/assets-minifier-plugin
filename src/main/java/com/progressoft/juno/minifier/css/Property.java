@@ -10,52 +10,52 @@ import java.util.regex.Pattern;
 
 class Property implements Comparable<Property> {
     private static final Logger logger = LoggerFactory.getLogger(Property.class);
-    protected String property;
+    protected String prop;
     protected Part[] parts;
 
     public Property(String property) throws IncompletePropertyException {
-        ArrayList<String> parts = new ArrayList<String>();
+        ArrayList<String> prts = new ArrayList<String>();
         boolean bCanSplit = true;
         int j = 0;
         String substr;
         logger.debug("\t\tExamining property: {}", property);
         for (int i = 0; i < property.length(); i++) {
-            if (!bCanSplit) { // If we're inside a string
+            if (!bCanSplit) {
                 bCanSplit = (property.charAt(i) == '"');
             } else if (property.charAt(i) == '"') {
                 bCanSplit = false;
-            } else if (property.charAt(i) == ':' && parts.size() < 1) {
+            } else if (property.charAt(i) == ':' && prts.isEmpty()) {
                 substr = property.substring(j, i);
-                if (!(substr.trim().equals("") || (substr == null))) {
-                    parts.add(substr);
+                if (!substr.trim().isEmpty()) {
+                    prts.add(substr);
                 }
                 j = i + 1;
             }
         }
-        substr = property.substring(j, property.length());
-        if (!substr.trim().equals("")) {
-            parts.add(substr);
+        substr = property.substring(j);
+        if (!substr.trim().isEmpty()) {
+            prts.add(substr);
         }
-        if (parts.size() < 2) {
+        if (prts.size() < 2) {
             throw new IncompletePropertyException(property);
         }
 
-        String prop = parts.get(0).trim();
-        if (!(prop.length() > 2 && prop.substring(0, 2).equals("--"))) {
+        String prop = prts.get(0).trim();
+        if (!(prop.length() > 2 && prop.startsWith("--"))) {
             prop = prop.toLowerCase();
         }
-        this.property = prop;
-        this.parts = parseValues(simplifyColours(parts.get(1).trim().replaceAll(", ", ",")));
+        this.prop = prop;
+        this.parts = parseValues(simplifyColours(prts.get(1).trim().replaceAll(", ", ",")));
     }
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.property).append(":");
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.prop).append(":");
         for (Part p : this.parts) {
             sb.append(p.toString()).append(",");
         }
-        sb.deleteCharAt(sb.length() - 1); // Delete the trailing comma.
+        sb.deleteCharAt(sb.length() - 1);
         sb.append(";");
         return sb.toString();
     }
@@ -63,8 +63,8 @@ class Property implements Comparable<Property> {
     public int compareTo(Property other) {
         // We can't just use String.compareTo(), because we need to sort properties that
         // have hack prefixes last -- eg, *display should come after display.
-        String thisProp = this.property;
-        String thatProp = other.property;
+        String thisProp = this.prop;
+        String thatProp = other.prop;
 
         if (thisProp.charAt(0) == '-') {
             thisProp = thisProp.substring(1);
@@ -84,12 +84,12 @@ class Property implements Comparable<Property> {
     }
 
     private Part[] parseValues(String contents) {
-        String[] parts = contents.split(",");
-        Part[] results = new Part[parts.length];
+        String[] prts = contents.split(",");
+        Part[] results = new Part[prts.length];
 
-        for (int i = 0; i < parts.length; i++) {
+        for (int i = 0; i < prts.length; i++) {
             try {
-                results[i] = new Part(parts[i], property);
+                results[i] = new Part(prts[i], prop);
             } catch (Exception e) {
                 logger.debug("Exception in parseValues().", e);
                 results[i] = null;
@@ -113,7 +113,7 @@ class Property implements Comparable<Property> {
     // Convert rgb(51,102,153) to #336699 (this code largely based on YUI code)
     private String simplifyRGBColours(String contents) {
         StringBuffer newContents = new StringBuffer();
-        StringBuffer hexColour;
+        StringBuilder hexColour;
         String[] rgbColours;
         int colourValue;
 
@@ -121,10 +121,10 @@ class Property implements Comparable<Property> {
         Matcher matcher = pattern.matcher(contents);
 
         while (matcher.find()) {
-            hexColour = new StringBuffer("#");
+            hexColour = new StringBuilder("#");
             rgbColours = matcher.group(1).split(",");
-            for (int i = 0; i < rgbColours.length; i++) {
-                colourValue = Integer.parseInt(rgbColours[i]);
+            for (String rgbColour : rgbColours) {
+                colourValue = Integer.parseInt(rgbColour);
                 if (colourValue < 16) {
                     hexColour.append("0");
                 }
@@ -133,7 +133,6 @@ class Property implements Comparable<Property> {
             matcher.appendReplacement(newContents, hexColour.toString());
         }
         matcher.appendTail(newContents);
-
         return newContents.toString();
     }
 }

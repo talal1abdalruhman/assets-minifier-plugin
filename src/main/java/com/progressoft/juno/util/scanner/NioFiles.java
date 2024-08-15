@@ -65,31 +65,4 @@ public class NioFiles {
         BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
         return basicFileAttributes.lastModifiedTime().toMillis();
     }
-
-    public static File readSymbolicLink(File symlink) throws IOException {
-        Path path = Files.readSymbolicLink(symlink.toPath());
-        return path.toFile();
-    }
-
-    public static File createSymbolicLink(File symlink, File target) throws IOException {
-        Path link = symlink.toPath();
-        if (Files.exists(link, LinkOption.NOFOLLOW_LINKS)) {
-            Files.delete(link);
-        }
-        link = Files.createSymbolicLink(link, target.toPath());
-        return link.toFile();
-    }
-
-    public static boolean deleteIfExists(File file) throws IOException {
-        return Files.deleteIfExists(file.toPath());
-    }
-
-    public static File copy(File source, File target) throws IOException {
-        Path copy = Files.copy(
-                source.toPath(),
-                target.toPath(),
-                StandardCopyOption.REPLACE_EXISTING,
-                StandardCopyOption.COPY_ATTRIBUTES);
-        return copy.toFile();
-    }
 }

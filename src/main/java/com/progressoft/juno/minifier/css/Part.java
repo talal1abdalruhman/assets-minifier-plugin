@@ -10,7 +10,7 @@ class Part {
     String contents;
     String property;
 
-    public Part(String contents, String property) throws Exception {
+    public Part(String contents, String property) {
         this.contents = " " + contents;
         this.property = property;
         simplify();
@@ -18,11 +18,8 @@ class Part {
 
     private void simplify() {
         this.contents = this.contents.replaceAll(" !important", "!important");
-
         this.contents = this.contents.replaceAll("(\\s)(0)(px|em|%|in|cm|mm|pc|pt|ex)", "$1$2");
-
         this.contents = this.contents.trim();
-
         if (this.contents.equals("0 0 0 0")) {
             this.contents = "0";
         }
@@ -40,42 +37,35 @@ class Part {
     }
 
     private void simplifyParameters() {
-        if (this.property.equals("background-size") || this.property.equals("quotes")
+        if (this.property.equals("background-size")
+                || this.property.equals("quotes")
                 || this.property.equals("transform-origin"))
             return;
 
-        StringBuffer newContents = new StringBuffer();
-
+        StringBuilder newContents = new StringBuilder();
         String[] params = this.contents.split(" ");
-        if (params.length == 4) {
-            if (params[1].equalsIgnoreCase(params[3])) {
-                params = Arrays.copyOf(params, 3);
-            }
-        }
-        if (params.length == 3) {
-            if (params[0].equalsIgnoreCase(params[2])) {
-                params = Arrays.copyOf(params, 2);
-            }
-        }
-        if (params.length == 2) {
-            if (params[0].equalsIgnoreCase(params[1])) {
-                params = Arrays.copyOf(params, 1);
-            }
+        if (params.length == 4 && params[1].equalsIgnoreCase(params[3])) {
+            params = Arrays.copyOf(params, 3);
         }
 
-        for (int i = 0; i < params.length; i++) {
-            newContents.append(params[i] + " ");
+        if (params.length == 3 && params[0].equalsIgnoreCase(params[2])) {
+            params = Arrays.copyOf(params, 2);
+        }
+
+        if (params.length == 2 && params[0].equalsIgnoreCase(params[1])) {
+            params = Arrays.copyOf(params, 1);
+        }
+
+        for (String param : params) {
+            newContents.append(param).append(" ");
         }
         newContents.deleteCharAt(newContents.length() - 1);
         this.contents = newContents.toString();
     }
 
     private void simplifyFontWeights() {
-        if (!this.property.equals("font-weight"))
-            return;
-
+        if (!this.property.equals("font-weight")) return;
         String lcContents = this.contents.toLowerCase();
-
         for (int i = 0; i < FONT_WEIGHT_NAMES.length; i++) {
             if (lcContents.equals(FONT_WEIGHT_NAMES[i])) {
                 this.contents = FONT_WEIGHT_VALUES[i];
@@ -109,21 +99,16 @@ class Part {
                     this.contents = HTML_COLOUR_VALUES[i];
                 }
                 break;
-            } else if (lcContents.equals(HTML_COLOUR_VALUES[i])) {
-                if (HTML_COLOUR_NAMES[i].length() < HTML_COLOUR_VALUES[i].length()) {
-                    this.contents = HTML_COLOUR_NAMES[i];
-                }
+            } else if (lcContents.equals(HTML_COLOUR_VALUES[i]) && HTML_COLOUR_NAMES[i].length() < HTML_COLOUR_VALUES[i].length()) {
+                this.contents = HTML_COLOUR_NAMES[i];
             }
         }
     }
 
     private void simplifyHexColours() {
         StringBuffer newContents = new StringBuffer();
-
-        Pattern pattern = Pattern
-                .compile("#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
+        Pattern pattern = Pattern.compile("#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])");
         Matcher matcher = pattern.matcher(this.contents);
-
         while (matcher.find()) {
             if (matcher.group(1).equalsIgnoreCase(matcher.group(2))
                     && matcher.group(3).equalsIgnoreCase(matcher.group(4))
@@ -135,7 +120,6 @@ class Part {
             }
         }
         matcher.appendTail(newContents);
-
         this.contents = newContents.toString();
     }
 

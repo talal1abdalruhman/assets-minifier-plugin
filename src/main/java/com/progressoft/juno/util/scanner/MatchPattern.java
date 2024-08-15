@@ -14,8 +14,6 @@ public class MatchPattern {
 
     private final String regexPattern;
 
-    private final String separator;
-
     private final String[] tokenized;
 
     private final char[][] tokenizedChar;
@@ -29,19 +27,10 @@ public class MatchPattern {
                 ? source.substring(ANT_HANDLER_PREFIX.length(),
                 source.length() - PATTERN_HANDLER_SUFFIX.length())
                 : source;
-        this.separator = separator;
         tokenized = tokenizePathToString(this.source, separator);
         tokenizedChar = new char[tokenized.length][];
         for (int i = 0; i < tokenized.length; i++) {
             tokenizedChar[i] = tokenized[i].toCharArray();
-        }
-    }
-
-    public boolean matchPath(String str, boolean isCaseSensitive) {
-        if (regexPattern != null) {
-            return str.matches(regexPattern);
-        } else {
-            return SelectorUtils.matchAntPathPattern(this, str, separator, isCaseSensitive);
         }
     }
 

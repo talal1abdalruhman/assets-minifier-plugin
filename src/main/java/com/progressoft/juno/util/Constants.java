@@ -6,12 +6,25 @@ public class Constants {
 
 
     public static final String PATTERN_HANDLER_PREFIX = "[";
-
     public static final String PATTERN_HANDLER_SUFFIX = "]";
-
     public static final String REGEX_HANDLER_PREFIX = "%regex" + PATTERN_HANDLER_PREFIX;
-
     public static final String ANT_HANDLER_PREFIX = "%ant" + PATTERN_HANDLER_PREFIX;
+    public static final int SPACE = ' ';
+    public static final int NEWLINE = '\n';
+    public static final int CARRIAGE_RETURN = '\r';
+    public static final int FORWARD_SLASH = '/';
+    public static final int BACKWARD_SLASH = '\\';
+    public static final int STAR = '*';
+    public static final int SINGLE_QUOTE = '\'';
+    public static final int DOUBLE_QUOTE = '"';
+    public static final int OPEN_CURLY = '{';
+    public static final int CLOSE_CURLY = '}';
+    public static final int OPEN_SQUARE = '[';
+    public static final int CLOSE_SQUARE = ']';
+    public static final int OPEN_PARENTHESIS = '(';
+    public static final int CLOSE_PARENTHESIS = ')';
+    public static final int PLUS = '+';
+    public static final int MINUS = '-';
 
     /**
      * Symbolic colour names defined by HTML
@@ -142,5 +155,7 @@ public class Constants {
             "**/-darcs-backup*",
             "**/.darcs-temp-mail"
     };
+
+
 
 }
