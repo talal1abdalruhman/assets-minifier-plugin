@@ -15,7 +15,7 @@ class Selector {
     private static final Logger logger = LoggerFactory.getLogger(Selector.class);
     private Property[] properties = null;
     private List<Selector> subSelectors = null;
-    private String selector;
+    private String slctr;
 
 
     public Selector(String selector)
@@ -26,9 +26,9 @@ class Selector {
             throw new IncompleteSelectorException(selector);
         }
 
-        this.selector = parts[0].trim();
+        this.slctr = parts[0].trim();
 
-        this.selector = this.selector.replaceAll("\\s?(\\+|~|,|=|~=|\\^=|\\$=|\\*=|\\|=|>)\\s?", "$1");
+        this.slctr = this.slctr.replaceAll("\\s?(\\+|~|,|=|~=|\\^=|\\$=|\\*=|\\|=|>)\\s?", "$1");
 
         if (parts.length > 2) {
             this.subSelectors = new ArrayList<>();
@@ -42,7 +42,7 @@ class Selector {
             }
         } else {
             String contents = parts[parts.length - 1].trim();
-            logger.debug("Parsing selector: {}", this.selector);
+            logger.debug("Parsing selector: {}", this.slctr);
             logger.debug("\t{}", contents);
             if (contents.charAt(contents.length() - 1) != '}') {
                 throw new UnterminatedSelectorException(selector);
@@ -63,8 +63,8 @@ class Selector {
 
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.selector).append("{");
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.slctr).append("{");
         if (this.subSelectors != null) {
             for (Selector s : this.subSelectors) {
                 sb.append(s.toString());
@@ -115,7 +115,7 @@ class Selector {
             try {
                 results.add(new Property(parts.get(i)));
             } catch (IncompletePropertyException ipex) {
-                logger.debug("Incomplete property in selector '{}': {}", selector, ipex.getMessage());
+                logger.debug("Incomplete property in selector '{}': {}", slctr, ipex.getMessage());
             }
         }
 

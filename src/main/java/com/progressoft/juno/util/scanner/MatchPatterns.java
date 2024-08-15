@@ -51,10 +51,6 @@ public class MatchPatterns {
         return new MatchPatterns(result);
     }
 
-    public static MatchPatterns from(Iterable<String> strings) {
-        return new MatchPatterns(getMatchPatterns(strings));
-    }
-
     private static MatchPattern[] getMatchPatterns(Iterable<String> items) {
         List<MatchPattern> result = new ArrayList<>();
         for (String string : items) {

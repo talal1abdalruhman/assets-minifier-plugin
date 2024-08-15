@@ -45,11 +45,6 @@ public class DirectoryScanner extends AbstractScanner {
         this.basedir = basedir;
     }
 
-    @Override
-    public File getBasedir() {
-        return basedir;
-    }
-
     public void setFollowSymlinks(boolean followSymlinks) {
         this.followSymlinks = followSymlinks;
     }
@@ -220,45 +215,6 @@ public class DirectoryScanner extends AbstractScanner {
     @Override
     public String[] getIncludedFiles() {
         return filesIncluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getNotIncludedFiles() {
-        slowScan();
-        return filesNotIncluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getExcludedFiles() {
-        slowScan();
-        return filesExcluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getDeselectedFiles() {
-        slowScan();
-        return filesDeselected.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    @Override
-    public String[] getIncludedDirectories() {
-        return dirsIncluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getNotIncludedDirectories() {
-        slowScan();
-        return dirsNotIncluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getExcludedDirectories() {
-        slowScan();
-        return dirsExcluded.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public String[] getDeselectedDirectories() {
-        slowScan();
-        return dirsDeselected.toArray(EMPTY_STRING_ARRAY);
-    }
-
-    public boolean isSymbolicLink(File parent, String name) throws IOException {
-        return NioFiles.isSymbolicLink(new File(parent, name));
     }
 
     public boolean isParentSymbolicLink(File parent, String name) throws IOException {
