@@ -4,7 +4,6 @@ import com.progressoft.juno.minifier.GeneralMinifier;
 import com.progressoft.juno.minifier.css.CSSMinifier;
 import com.progressoft.juno.minifier.exception.MinificationException;
 import com.progressoft.juno.minifier.js.JSMinifier;
-import com.progressoft.juno.util.scanner.DirectoryScanner;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -16,7 +15,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,8 +54,9 @@ public class Minifier extends AbstractMojo {
 
     @Override
     public void execute() throws MojoFailureException {
-        minify(JSMinifier.class, jsFilenames());
-        minify(CSSMinifier.class, cssFilenames());
+        validateMinifyParameters();
+        minify(JSMinifier.class, getJsFilenames());
+        minify(CSSMinifier.class, getCssFilenames());
     }
 
     private void minify(Class<? extends GeneralMinifier> minifierClass, List<String> filenames) throws MojoFailureException {
@@ -78,21 +77,26 @@ public class Minifier extends AbstractMojo {
         }
     }
 
-    private List<String> jsFilenames() {
+    private List<String> getJsFilenames() {
         if (jsFilenames == null && isEnabledMinify(minifyJs)) {
             jsFilenames = getScannedFileNamesList(sourceDir, jsIncludes, jsExcludes);
         } else {
-            jsFilenames = new ArrayList<>();
+            jsFilenames = Collections.emptyList();
         }
         return jsFilenames;
     }
 
-    private List<String> cssFilenames() {
+    private List<String> getCssFilenames() {
         if (cssFilenames == null && isEnabledMinify(minifyCss)) {
             cssFilenames = getScannedFileNamesList(sourceDir, cssIncludes, cssExcludes);
         } else {
-            cssFilenames = new ArrayList<>();
+            cssFilenames = Collections.emptyList();
         }
         return cssFilenames;
+    }
+
+    private void validateMinifyParameters() throws MojoFailureException {
+        validateMinifyFlag(minifyJs, "minifyJs");
+        validateMinifyFlag(minifyCss, "minifyCss");
     }
 }
