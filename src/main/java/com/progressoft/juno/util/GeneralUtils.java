@@ -2,6 +2,7 @@ package com.progressoft.juno.util;
 
 
 import com.progressoft.juno.util.scanner.DirectoryScanner;
+import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,5 +35,12 @@ public class GeneralUtils {
         scanner.scan();
         Collections.addAll(list, scanner.getIncludedFiles());
         return list;
+    }
+
+    public static void validateMinifyFlag(String flag, String parameterName) throws MojoFailureException {
+        if (!"true".equalsIgnoreCase(flag) && !"false".equalsIgnoreCase(flag)) {
+            throw new MojoFailureException("Invalid value for " + parameterName + " parameter: " + flag
+                    + ". Expected 'true' or 'false'.");
+        }
     }
 }
