@@ -21,13 +21,13 @@ import java.util.List;
 import static com.progressoft.juno.util.GeneralUtils.*;
 
 
-@Mojo(name = "minify", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
-public class Minifier extends AbstractMojo {
+@Mojo(name = "minify", defaultPhase = LifecyclePhase.PACKAGE)
+public class MinifierMojo extends AbstractMojo {
 
-    @Parameter(property = "sourceDir", required = true)
+    @Parameter(property = "sourceDir", defaultValue = "${project.build.directory}/${project.build.finalName}/", required = true)
     private String sourceDir;
 
-    @Parameter(property = "targetDir", required = true)
+    @Parameter(property = "targetDir", defaultValue = "${project.build.directory}/${project.build.finalName}-min/", required = true)
     private String targetDir;
 
     @Parameter(property = "jsIncludes", defaultValue = "**/*.js")
@@ -60,19 +60,19 @@ public class Minifier extends AbstractMojo {
     }
 
     private void minify(Class<? extends GeneralMinifier> minifierClass, List<String> filenames) throws MojoFailureException {
-        for (String s : filenames) {
+        for (String filename : filenames) {
             try {
-                File infile = new File(sourceDir, s);
-                File outfile = new File(targetDir, s);
+                File infile = new File(sourceDir, filename);
+                File outfile = new File(targetDir, filename);
                 Constructor<? extends GeneralMinifier> constructor = minifierClass.getConstructor(Reader.class);
                 GeneralMinifier minifier = constructor.newInstance(new InputStreamReader(Files.newInputStream(infile.toPath()), StandardCharsets.UTF_8));
                 Files.createDirectories(outfile.toPath().getParent());
                 minifier.minify(new OutputStreamWriter(Files.newOutputStream(outfile.toPath()), StandardCharsets.UTF_8));
-                getLog().info(getMinificationResult(s, infile, outfile));
+                getLog().info(getMinificationResult(filename, infile, outfile));
             } catch (MinificationException | IOException | NoSuchMethodException | SecurityException
                      | InstantiationException | IllegalAccessException | IllegalArgumentException
                      | InvocationTargetException e) {
-                throw new MojoFailureException("Unable to minify resources.");
+                throw new MojoFailureException("Unable to minify resource: " + filename);
             }
         }
     }
