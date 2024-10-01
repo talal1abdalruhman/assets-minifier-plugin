@@ -107,5 +107,10 @@
             <version>2.20.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.10.13</version>
+        </dependency>
     </dependencies>
 </project>
